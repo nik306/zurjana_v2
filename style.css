@@ -1,0 +1,101 @@
+:root {
+  --paper: #fffffd;        /* matches the logo's background */
+  --ink: #1b2a26;
+  --brand: #004f3f;        /* dark green from the logo */
+  --leaf: #bcdda6;         /* light green from the logo */
+  --accent: #3f7d12;       /* readable version of the logo's bright green */
+  --muted: #55675f;
+  --line: #d6e3cf;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Figtree", system-ui, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.5;
+}
+
+main {
+  max-width: 38rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3.5rem;
+}
+
+header { margin-bottom: 2rem; }
+
+.logo {
+  display: block;
+  width: min(18rem, 80%);
+  height: auto;
+  margin: 0 0 2rem -0.25rem;
+}
+
+h1 {
+  margin: 0;
+  color: var(--brand);
+  font-family: "Young Serif", Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(2.25rem, 8vw, 3.25rem);
+  line-height: 1.05;
+}
+
+#date {
+  margin: 0.6rem 0 0;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+h2 {
+  margin: 2.25rem 0 0.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--brand);
+  color: var(--brand);
+  font-family: "Young Serif", Georgia, serif;
+  font-weight: 400;
+  font-size: 1.5rem;
+}
+
+ul { list-style: none; margin: 0; padding: 0; }
+
+li {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.name { flex: 1; }
+.price { white-space: nowrap; font-weight: 500; color: var(--brand); }
+
+footer {
+  background: var(--leaf);
+  padding: 2rem 1.25rem;
+}
+
+.contact {
+  max-width: 38rem;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem 2rem;
+}
+
+.contact a {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  color: var(--brand);
+  text-decoration: none;
+}
+
+.contact a:hover span { text-decoration: underline; }
+.contact a:focus-visible { outline: 3px solid var(--brand); outline-offset: 4px; border-radius: 4px; }
+
+.contact svg { flex: none; width: 1.6rem; height: 1.6rem; fill: var(--brand); }
+.contact span { display: flex; flex-direction: column; white-space: nowrap; }
+.contact strong { font-weight: 500; font-size: 0.875rem; opacity: 0.8; }
