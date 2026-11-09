@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Young+Serif&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
   <header class="site-header">
@@ -22,34 +22,90 @@
       <span>zur Jana</span>
     </a>
     <nav>
-      <a href="#today">
+      <a href="#mittagsmenu" data-tab="mittagsmenu">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-        <span>Today's menu</span>
+        <span>Mittagsmenü</span>
+      </a>
+      <a href="#speisekarte" data-tab="speisekarte">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.25C10.5 5 8.5 4.5 6 4.5c-1 0-2 .1-3 .4v13.5c1-.3 2-.4 3-.4 2.5 0 4.5.5 6 1.75m0-13.5C13.5 5 15.5 4.5 18 4.5c1 0 2 .1 3 .4v13.5c-1-.3-2-.4-3-.4-2.5 0-4.5.5-6 1.75m0-13.5v13.5"/></svg>
+        <span>Speisekarte</span>
+      </a>
+      <a href="#galerie" id="nav-gallery" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16l4.6-4.6a2 2 0 012.8 0L16 16m-2-2l1.6-1.6a2 2 0 012.8 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        <span>Galerie</span>
       </a>
       <a href="#contact">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-        <span>Contact</span>
+        <span>Kontakt</span>
       </a>
     </nav>
     </div>
   </header>
 
-  <main>
-    <section class="hero" id="top">
-      <p class="eyebrow">Gasthaus · Klagenfurt</p>
+  <section class="hero" id="top">
+    <div class="hero-inner">
       <img class="logo" src="assets/logo.png" alt="zur Jana Gasthaus" width="960" height="960">
-      <p class="tagline">Authentic cooking with a modern touch</p>
-      <a class="cta" href="#today">See today's menu</a>
+      <div class="hero-text">
+        <p class="eyebrow">Gasthaus · Klagenfurt</p>
+        <p class="hero-title">Willkommen bei zur&nbsp;Jana</p>
+        <dl class="hero-hours">
+          <div>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            <dt>Öffnungszeiten</dt>
+            <dd>Montag bis Sonntag <strong>11:00 – 22:00 Uhr</strong></dd>
+          </div>
+          <div>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v7a2 2 0 002 2v9M11 3v7a2 2 0 01-2 2M9 3v6M17 21V3c-2 1.5-3 4-3 7v3h3"/></svg>
+            <dt>Warme Küche</dt>
+            <dd>11:00 – 14:00 Uhr und 17:00 – 20:00 Uhr</dd>
+          </div>
+        </dl>
+        <p class="badge-closed">Kein Ruhetag!</p>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <section id="menus" class="daily">
+      <div class="tabs" role="tablist" aria-label="Menüs">
+        <button type="button" role="tab" id="tab-mittagsmenu" data-tab="mittagsmenu" aria-controls="panel-mittagsmenu" aria-selected="true">Mittagsmenü</button>
+        <button type="button" role="tab" id="tab-speisekarte" data-tab="speisekarte" aria-controls="panel-speisekarte" aria-selected="false" tabindex="-1">Speisekarte</button>
+      </div>
+
+      <div class="panel" id="panel-mittagsmenu" role="tabpanel" aria-labelledby="tab-mittagsmenu">
+        <p class="eyebrow light">Fresh every day</p>
+        <h1 class="panel-title">Today's lunch menu</h1>
+        <p class="panel-sub" id="date"></p>
+        <div class="ornament" aria-hidden="true"><span></span>✦<span></span></div>
+        <div id="menu" class="menu-list" aria-live="polite">Loading menu…</div>
+      </div>
+
+      <div class="panel" id="panel-speisekarte" role="tabpanel" aria-labelledby="tab-speisekarte" hidden>
+        <p class="eyebrow light">À la carte</p>
+        <h2 class="panel-title">Speisekarte</h2>
+        <p class="panel-sub">Our regular menu, available every day</p>
+        <div class="ornament" aria-hidden="true"><span></span>✦<span></span></div>
+        <div id="regular-menu" class="menu-list" aria-live="polite">Loading menu…</div>
+      </div>
     </section>
 
-    <section id="today" class="daily">
-      <p class="eyebrow light">Fresh every day</p>
-      <h1>Today's lunch menu</h1>
-      <p id="date"></p>
-      <div class="ornament" aria-hidden="true"><span></span>✦<span></span></div>
-      <div id="menu" aria-live="polite">Loading menu…</div>
+    <section id="galerie" class="gallery" hidden>
+      <p class="eyebrow">Eindrücke</p>
+      <h2 class="section-title">Galerie</h2>
+      <div class="gallery-grid" id="gallery-grid"></div>
+      <button type="button" class="more" id="gallery-more" hidden>Mehr Fotos anzeigen</button>
     </section>
   </main>
+
+  <dialog class="lightbox" id="lightbox" aria-label="Foto">
+    <button type="button" class="lb-btn lb-close" aria-label="Schließen">✕</button>
+    <button type="button" class="lb-btn lb-prev" aria-label="Vorheriges Foto">‹</button>
+    <figure>
+      <img alt="">
+      <figcaption><span class="lb-caption"></span> <span class="lb-count"></span></figcaption>
+    </figure>
+    <button type="button" class="lb-btn lb-next" aria-label="Nächstes Foto">›</button>
+  </dialog>
 
   <footer id="contact">
     <div class="footer-grid">
@@ -85,23 +141,22 @@
 
       <div class="footer-col">
         <h4>Opening hours</h4>
-        <!-- EDIT: check these hours – they are the sample hours from the old site -->
         <dl class="hours">
-          <div data-day="1"><dt>Monday</dt><dd>11:00 – 15:00<br>17:00 – 22:00</dd></div>
-          <div data-day="2"><dt>Tuesday</dt><dd>11:00 – 15:00<br>17:00 – 22:00</dd></div>
-          <div data-day="3"><dt>Wednesday</dt><dd>11:00 – 15:00<br>17:00 – 22:00</dd></div>
-          <div data-day="4"><dt>Thursday</dt><dd>11:00 – 15:00<br>17:00 – 22:00</dd></div>
-          <div data-day="5"><dt>Friday</dt><dd>11:00 – 15:00<br>17:00 – 23:00</dd></div>
-          <div data-day="6"><dt>Saturday</dt><dd>12:00 – 23:00</dd></div>
-          <div data-day="0"><dt>Sunday</dt><dd>12:00 – 21:00</dd></div>
+          <div data-day="1"><dt>Monday</dt><dd>11:00 – 22:00</dd></div>
+          <div data-day="2"><dt>Tuesday</dt><dd>11:00 – 22:00</dd></div>
+          <div data-day="3"><dt>Wednesday</dt><dd>11:00 – 22:00</dd></div>
+          <div data-day="4"><dt>Thursday</dt><dd>11:00 – 22:00</dd></div>
+          <div data-day="5"><dt>Friday</dt><dd>11:00 – 22:00</dd></div>
+          <div data-day="6"><dt>Saturday</dt><dd>11:00 – 22:00</dd></div>
+          <div data-day="0"><dt>Sunday</dt><dd>11:00 – 22:00</dd></div>
         </dl>
-        <p class="note">* Opening hours may vary on public holidays</p>
+        <p class="note">Hot food 11:00 – 14:00 and 17:00 – 20:00. No closing day.</p>
       </div>
     </div>
 
     <p class="copyright">© <span id="year"></span> zur Jana. All rights reserved.</p>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=7"></script>
 </body>
 </html>

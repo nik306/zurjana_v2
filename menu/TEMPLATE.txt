@@ -1,6 +1,6 @@
-# One dish per line:  Category | Dish name | Price
+# One dish per line:  Category | Dish name
 # Lines starting with # are ignored. Save as menu/YYYY-MM-DD.txt
 # End a dish name with (vegetarian) or (vegan) to show a small badge.
-Soups | Clear beef soup with semolina dumplings | 4,90
-Mains | Wiener Schnitzel with potato salad | 14,90
-Desserts | Apple strudel | 5,50
+Soups | Clear beef soup with semolina dumplings
+Mains | Wiener Schnitzel with potato salad
+Desserts | Apple strudel
