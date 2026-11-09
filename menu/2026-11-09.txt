@@ -1,0 +1,10 @@
+Soups | Clear beef soup with liver dumplings | 4,90
+Soups | Pumpkin cream soup with pumpkin seed oil | 5,20
+Mains | Wiener Schnitzel with parsley potatoes | 15,90
+Mains | Tafelspitz with apple horseradish and rösti | 17,50
+Mains | Beef goulash with bread dumpling | 13,90
+Mains | Käsespätzle with crispy onions and green salad | 12,50
+Mains | Roast pork with sauerkraut and potato dumplings | 14,50
+Mains | Mushroom risotto with parmesan (vegetarian) | 12,90
+Desserts | Apple strudel with vanilla sauce | 5,50
+Desserts | Kaiserschmarrn with plum compote | 8,90

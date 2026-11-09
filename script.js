@@ -1,12 +1,18 @@
 // Today's date in the visitor's local time, formatted YYYY-MM-DD
-const today = new Date().toLocaleDateString("sv-SE");
+const now = new Date();
+const today = now.toLocaleDateString("sv-SE");
 
 const menuEl = document.getElementById("menu");
 const dateEl = document.getElementById("date");
+document.getElementById("year").textContent = now.getFullYear();
 
-dateEl.textContent = new Date().toLocaleDateString("en-GB", {
+dateEl.textContent = now.toLocaleDateString("en-GB", {
   weekday: "long", day: "numeric", month: "long", year: "numeric"
 });
+
+// Highlight today's row in the opening hours
+const todayRow = document.querySelector(`.hours [data-day="${now.getDay()}"]`);
+if (todayRow) todayRow.classList.add("is-today");
 
 fetch(`menu/${today}.txt?v=${Date.now()}`)
   .then(response => {
@@ -15,11 +21,12 @@ fetch(`menu/${today}.txt?v=${Date.now()}`)
   })
   .then(text => render(parse(text)))
   .catch(() => {
-    menuEl.textContent = "Today's menu isn't available yet. Please check back soon.";
+    menuEl.innerHTML = '<p class="empty">Today\'s menu isn\'t available yet.<br>Please check back soon.</p>';
   });
 
 // Each line: Category | Dish name | Price
 // Blank lines and lines starting with # are ignored.
+// Ending a dish name with "(vegetarian)" or "(vegan)" shows a small badge.
 function parse(text) {
   const groups = new Map();
   for (const line of text.split("\n")) {
@@ -46,8 +53,21 @@ function render(groups) {
       const li = document.createElement("li");
       const name = document.createElement("span");
       name.className = "name";
-      name.textContent = item.name;
-      li.append(name);
+
+      const tag = item.name.match(/\s*\((vegetarian|vegan)\)\s*$/i);
+      name.textContent = tag ? item.name.slice(0, tag.index) : item.name;
+      if (tag) {
+        const badge = document.createElement("span");
+        badge.className = "badge";
+        badge.textContent = tag[1].toLowerCase();
+        name.append(" ", badge);
+      }
+
+      const dots = document.createElement("span");
+      dots.className = "dots";
+      dots.setAttribute("aria-hidden", "true");
+      li.append(name, dots);
+
       if (item.price) {
         const price = document.createElement("span");
         price.className = "price";
