@@ -1,18 +1,42 @@
-# Speisekarte – wird im Tab "Speisekarte" angezeigt.
-# Gleiches Format wie das Mittagsmenü:  Kategorie | Gericht
-# Diese Datei bearbeiten, wenn sich die Speisekarte ändert.
-Vorspeisen | Beef Tatar mit getoastetem Brot
-Vorspeisen | Bunter Blattsalat mit Kernöl
-Vorspeisen | Gebackener Camembert mit Preiselbeeren (vegetarisch)
-Suppen | Frittatensuppe
-Suppen | Knoblauchcremesuppe mit Croutons (vegetarisch)
-Hauptspeisen | Wiener Schnitzel vom Kalb mit Petersilerdäpfeln
-Hauptspeisen | Schweinsschnitzel mit Pommes frites
-Hauptspeisen | Cordon bleu mit Reis und Preiselbeeren
-Hauptspeisen | Zwiebelrostbraten mit Braterdäpfeln
-Hauptspeisen | Gebratene Forelle mit Butterdäpfeln
-Hauptspeisen | Kärntner Kasnudeln mit brauner Butter (vegetarisch)
-Hauptspeisen | Gemüsepfanne mit Reis (vegan)
-Nachspeisen | Apfelstrudel mit Vanillesauce
-Nachspeisen | Palatschinken mit Marillenmarmelade
-Nachspeisen | Sachertorte mit Schlagobers
+# À la carte Speisekarte – wird im Tab "Speisekarte" angezeigt.
+# Kategorie | Gericht | Preis
+# Eine Zeile in Klammern direkt unter einem Gericht = kleine Beschreibung, z. B. ( 2 Stück )
+# Eine Zeile mit * am Anfang = Hinweis unter der Karte.
+
+Suppe | Tagessuppe | 5,50
+
+Salate | Grüner Salat | 4,50
+Salate | Gemischter Salat | € 5,50 / € 8,50
+( klein / groß )
+Salate | Backhendlsalat | 14,90
+( gebackene Hühnerstreifen in Kürbiskernpanade )
+Salate | Fitness-Salat | 14,90
+( natur gebratene Hühnerstreifen )
+
+Hauptspeisen | Wiener Schnitzel mit Beilage nach Wahl | 15,90
+Hauptspeisen | Pariser Schnitzel mit Beilage nach Wahl | 15,90
+Hauptspeisen | Cordon bleu klassisch mit Beilage nach Wahl | 16,90
+( gefüllt mit Käse und Schinken )
+Hauptspeisen | Bauern-Cordon-bleu mit Beilage nach Wahl | 16,90
+( gefüllt mit Speck, Zwiebel und Käse, in Kürbiskernpanade )
+Hauptspeisen | Hawaii-Cordon-bleu mit Beilage nach Wahl | 16,90
+( gefüllt mit Schinken, Käse und Ananas, in Kokospanade )
+Hauptspeisen | Backhendl (halbes) mit Beilage nach Wahl | 16,90
+Hauptspeisen | Hausspieß mit Beilage nach Wahl | 14,90
+Hauptspeisen | Bernerwürstl mit Beilage nach Wahl | 13,90
+Hauptspeisen | Nudeln mit Salat | 15,90
+( Käse-, Kürbis-, Lachs- oder Tomaten-Mozzarella-Nudeln )
+Hauptspeisen | Nudelteller mit Salat | 15,90
+( mit 4 verschiedenen Nudelsorten )
+
+Beilagen | Beilage nach Wahl | 5,50
+( Kartoffelsalat, Pommes, Bratkartoffeln, Kroketten, Reis, Petersilienkartoffeln oder Salzkartoffeln )
+
+Dessert | Marmelade-Palatschinken | 5,50
+( 2 Stück )
+Dessert | Nutella-Palatschinken | 5,50
+( 2 Stück )
+Dessert | Eis-Palatschinke | 8,90
+Dessert | Heiße Liebe | 8,90
+
+* Informationen über Stoffe in unseren Speisen, die Allergien oder Unverträglichkeiten auslösen können, erhalten Sie auf Nachfrage bei unseren Kellner/innen.

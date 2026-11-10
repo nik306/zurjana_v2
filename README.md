@@ -31,6 +31,11 @@ On weekends only next week is shown. If this week's file is missing, visitors se
 Bump the `?v=` number on the `style.css` and `script.js` links in `index.html` (e.g. `v=3` → `v=4`),
 otherwise visitors may see the old styles for up to 10 minutes because of browser caching.
 
+## Speisekarte (à la carte)
+Edit `menu/speisekarte.txt`: one line per dish, `Kategorie | Gericht | Preis`.
+A line in brackets directly under a dish is its small description, e.g. `( gefüllt mit Käse und Schinken )`.
+A line starting with `*` is a note under the card (allergen information).
+
 ## Weekend list (Sa./So. Tagesempfehlung)
 The weekend list has its own tab, "Tagesempfehlung" (Mittagsmenü · Tagesempfehlung · Speisekarte).
 On Saturdays and Sundays it is always there and opens first (the Mittagsmenü is Monday–Friday only).

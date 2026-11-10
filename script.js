@@ -399,6 +399,7 @@ if (tabNames.includes(startTab)) {
 }
 
 // Menu file format – one line each:
+//   ( gefüllt mit Käse und Schinken ) a line in brackets right under a dish = its small description
 //   Kategorie | Gericht | Preis     e.g.  Menüs | Schweinsbraten mit Knödel | 11,90
 //   Kategorie | Gericht             (no price)
 //   Gericht | Preis   or   Gericht  (no category – short lists)
@@ -411,10 +412,17 @@ const PRICE = /^(€\s*)?\d+([.,]\d{1,2})?(\s*€)?$/;
 function parse(text) {
   const groups = new Map();
   groups.notes = [];
+  let last = null;
   for (const line of text.split("\n")) {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith("#")) continue;
     if (trimmed.startsWith("*")) { groups.notes.push(trimmed.slice(1).trim()); continue; }
+    // "( gefüllt mit Käse und Schinken )" right under a dish = its small description
+    if (trimmed.startsWith("(") && last) {
+      const detail = trimmed.replace(/^\(\s*/, "").replace(/\s*\)$/, "");
+      last.detail = last.detail ? `${last.detail} · ${detail}` : detail;
+      continue;
+    }
     const parts = trimmed.split("|").map(s => s.trim());
     let category = "", name, price = "";
     if (parts.length >= 3) [category, name, price] = parts;
@@ -423,7 +431,8 @@ function parse(text) {
     else name = parts[0];
     if (!name) continue;
     if (!groups.has(category)) groups.set(category, []);
-    groups.get(category).push({ name, price: formatPrice(price) });
+    last = { name, price: formatPrice(price), detail: "" };
+    groups.get(category).push(last);
   }
   return groups;
 }
@@ -479,6 +488,12 @@ function dishItem(item) {
     badge.className = "badge";
     badge.textContent = tag[1].toLowerCase() === "vegan" ? "vegan" : "vegetarisch";
     name.append(" ", badge);
+  }
+  if (item.detail) {
+    const detail = document.createElement("small");
+    detail.className = "dish-detail";
+    detail.textContent = item.detail;
+    name.append(detail);
   }
   li.append(name);
   if (item.price) {

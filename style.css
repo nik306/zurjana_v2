@@ -592,6 +592,15 @@ section { scroll-margin-top: 5rem; }
   text-align: left;
 }
 
+/* small description under a dish: "gefüllt mit Käse und Schinken", "2 Stück" */
+.dish-detail {
+  display: block;
+  margin-top: 0.1rem;
+  color: rgb(188 221 166 / 0.8);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
 .price {
   flex: none;
   color: var(--leaf);
