@@ -172,7 +172,12 @@ function renderWeek({ monday, text }, heading, counter) {
         price.textContent = week.price;
         line.append(price, details.length ? " " : "");
       }
-      line.append(details.join(" · "));
+      details.forEach((text, i) => {
+        const part = document.createElement("span");
+        part.className = "nowrap";
+        part.textContent = text;
+        line.append(i ? " · " : "", part);
+      });
       info.append(line);
     }
     if (week.notes.length) {
@@ -334,7 +339,8 @@ function moveIndicator() {
   const active = tabs.find(t => t.getAttribute("aria-selected") === "true");
   if (!active) return;
   tabIndicator.style.width = `${active.offsetWidth}px`;
-  tabIndicator.style.transform = `translateX(${active.offsetLeft - tabList.clientLeft}px)`;
+  tabIndicator.style.height = `${active.offsetHeight}px`;
+  tabIndicator.style.transform = `translate(${active.offsetLeft}px, ${active.offsetTop}px)`;
 }
 moveIndicator();
 document.fonts?.ready.then(moveIndicator);
