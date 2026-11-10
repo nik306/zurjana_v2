@@ -172,11 +172,19 @@ function renderWeek({ monday, text }, heading, counter) {
         price.textContent = week.price;
         line.append(price, details.length ? " " : "");
       }
-      details.forEach((text, i) => {
+      // phones: the time goes onto its own line (see .week-time in style.css)
+      const parts = [[week.priceNote, "nowrap"], [week.time, "nowrap week-time"]].filter(([text]) => text);
+      parts.forEach(([text, cls], i) => {
+        if (i) {
+          const sep = document.createElement("span");
+          sep.className = "week-sep";
+          sep.textContent = " · ";
+          line.append(sep);
+        }
         const part = document.createElement("span");
-        part.className = "nowrap";
+        part.className = cls;
         part.textContent = text;
-        line.append(i ? " · " : "", part);
+        line.append(part);
       });
       info.append(line);
     }

@@ -1281,6 +1281,10 @@ footer h4 {
   .tab-indicator { border-radius: 0.55rem; }
   .tab-prefix { display: inline; }
 
+  /* price line in two clean lines: "€ 14,40 mit Suppe oder Salat" / "11:00 – 14:00 Uhr" */
+  .week-sep { display: none; }
+  .week-time { display: block; }
+
   /* week notes one per line (no "·" at a line start) */
   .week-notes { flex-direction: column; gap: 0.2rem; }
   .week-notes li + li::before { content: none; }
