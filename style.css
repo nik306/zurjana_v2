@@ -132,6 +132,85 @@ a:focus-visible {
   .tabs [role="tab"] { padding: 0 0.85rem; font-size: 0.875rem; }
 }
 
+/* ---------- Collapsed header menu (☰), switched on by script.js when the links don't fit ---------- */
+.nav-toggle { display: none; }
+
+.site-header.nav-collapsed .header-inner { justify-content: space-between; padding: 0 var(--gutter); }
+.site-header.nav-collapsed .header-brand,
+.site-header.nav-collapsed .header-brand span { display: flex; }
+
+.site-header.nav-collapsed .nav-toggle {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-right: -0.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0.6rem;
+  background: transparent;
+  color: var(--brand);
+  cursor: pointer;
+}
+
+.nav-toggle span {
+  position: absolute;
+  left: 0.7rem;
+  right: 0.7rem;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 0.25s var(--ease-out, ease), opacity 0.2s;
+}
+
+.nav-toggle span:nth-child(1) { top: calc(50% - 7px); }
+.nav-toggle span:nth-child(2) { top: calc(50% - 1px); }
+.nav-toggle span:nth-child(3) { top: calc(50% + 5px); }
+
+.site-header.nav-open .nav-toggle span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.site-header.nav-open .nav-toggle span:nth-child(2) { opacity: 0; }
+.site-header.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+.nav-toggle:focus-visible { outline: 3px solid var(--bright); outline-offset: 2px; }
+
+/* the link list folds out below the header */
+.site-header.nav-collapsed nav {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  flex-direction: column;
+  gap: 0.15rem;
+  max-width: none;
+  margin-top: 2px;                       /* below the green header line */
+  padding: 0.5rem var(--gutter) 1rem;
+  overflow: visible;
+  background: #fff;
+  border-bottom: 2px solid var(--bright);
+  box-shadow: 0 16px 24px -12px rgb(0 40 30 / 0.25);
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.2s, transform 0.2s, visibility 0s 0.2s;
+}
+
+.site-header.nav-collapsed.nav-open nav {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.site-header.nav-collapsed nav a {
+  min-height: 3rem;
+  padding: 0 1rem;
+  border-radius: 0.6rem;
+  font-size: 1rem;
+}
+
+.site-header.nav-collapsed nav svg { display: block; }
+
 /* ---------- Main ---------- */
 main {
   max-width: 64rem;

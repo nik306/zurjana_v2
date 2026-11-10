@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Young+Serif&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=25">
+  <link rel="stylesheet" href="style.css?v=26">
 </head>
 <body>
   <header class="site-header">
@@ -21,7 +21,7 @@
       <img src="assets/logo-square.png" alt="" width="40" height="40">
       <span>zur Jana</span>
     </a>
-    <nav>
+    <nav id="site-nav" aria-label="Hauptnavigation">
       <a href="#mittagsmenu" data-tab="mittagsmenu">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
         <span>Mittagsmenü</span>
@@ -36,13 +36,16 @@
       </a>
       <a href="#events" id="nav-events" hidden>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg>
-        <span>Events</span>
+        <span>Veranstaltungen</span>
       </a>
       <a href="#contact">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
         <span>Kontakt</span>
       </a>
     </nav>
+    <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Menü öffnen">
+      <span></span><span></span><span></span>
+    </button>
     </div>
   </header>
 
@@ -172,6 +175,6 @@
     <p class="copyright">© <span id="year"></span> zur Jana. Alle Rechte vorbehalten.</p>
   </footer>
 
-  <script src="script.js?v=22"></script>
+  <script src="script.js?v=23"></script>
 </body>
 </html>

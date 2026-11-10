@@ -382,6 +382,7 @@ whenPageLoaded(() => loadPhotoList("gallery")
     if (photos.length === 0) return;
     gallerySection.hidden = false;
     document.getElementById("nav-gallery").hidden = false;
+    fitNav();
     showMore();
   })
   .catch(() => { /* no gallery: section stays hidden */ }));
@@ -519,6 +520,7 @@ loadPhotoList("events")
     eventsBox.hidden = false;
     eventsBox.closest(".hero-inner").classList.add("has-events");
     document.getElementById("nav-events").hidden = false;
+    fitNav();
     updateNav();
   })
   .catch(() => { /* no events folder: nothing shown */ });
@@ -573,6 +575,45 @@ lightbox.addEventListener("touchend", e => {
   if (Math.abs(dx) > 50) showPhoto(current + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
   touchX = null;
 });
+
+// ---------- Collapsible header menu ----------
+// When the header links don't fit on one line (phones, or many links), they fold into a
+// ☰ button that opens a vertical list. Measured, not a fixed breakpoint.
+const siteHeader = document.querySelector(".site-header");
+const headerInner = siteHeader.querySelector(".header-inner");
+const siteNav = document.getElementById("site-nav");
+const navToggle = siteHeader.querySelector(".nav-toggle");
+
+function fitNav() {
+  const wasOpen = siteHeader.classList.contains("nav-open");
+  siteHeader.classList.remove("nav-collapsed", "nav-open");      // measure the one-line layout
+  const tooTight = siteNav.scrollWidth > siteNav.clientWidth + 1
+    || headerInner.scrollWidth > headerInner.clientWidth + 1;
+  siteHeader.classList.toggle("nav-collapsed", tooTight);
+  setNavOpen(tooTight && wasOpen);
+}
+
+function setNavOpen(open) {
+  siteHeader.classList.toggle("nav-open", open);
+  navToggle.setAttribute("aria-expanded", open);
+  navToggle.setAttribute("aria-label", open ? "Menü schließen" : "Menü öffnen");
+}
+
+navToggle.addEventListener("click", () => setNavOpen(!siteHeader.classList.contains("nav-open")));
+siteNav.addEventListener("click", e => { if (e.target.closest("a")) setNavOpen(false); });
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && siteHeader.classList.contains("nav-open")) {
+    setNavOpen(false);
+    navToggle.focus();
+  }
+});
+document.addEventListener("click", e => {
+  if (siteHeader.classList.contains("nav-open") && !siteHeader.contains(e.target)) setNavOpen(false);
+});
+
+fitNav();
+document.fonts?.ready.then(fitNav);
+window.addEventListener("resize", fitNav);
 
 // ---------- Animations ----------
 

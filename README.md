@@ -37,7 +37,7 @@ e.g. `https://www.zur-jana.at/?vorschau=2026-11-14`.
 
 ## Events (posters)
 Event posters are shown at the top of the page, in the welcome band (before the menus),
-and the header gets an "Events" link while at least one event is upcoming.
+and the header gets a "Veranstaltungen" link while at least one event is upcoming.
 
 1. Open the repo on github.com → `events/` folder → Add file → Upload files.
 2. Name the poster with the **event date**: `YYYY-MM-DD.jpg`, e.g. `2026-11-13.jpg`.
