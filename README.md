@@ -14,11 +14,40 @@
 3. Paste the dishes (see `TEMPLATE.txt`), then Commit changes.
 4. The site updates within about a minute.
 
-Menus can be written days ahead. If there is no file for today, visitors see "Das heutige Mittagsmenü ist noch nicht online".
+Menus can be written days ahead: every upcoming weekday that already has a file appears as a day button (Heute · Morgen · Do 12.11. …) in the Mittagsmenü, and so does the coming weekend's Tagesempfehlung. The categories (`Suppen | …`) are optional – a line with just the dish works too. If there is no file for today, visitors see "Das heutige Mittagsmenü ist noch nicht online".
 
 ## After changing style.css or script.js
 Bump the `?v=` number on the `style.css` and `script.js` links in `index.html` (e.g. `v=3` → `v=4`),
 otherwise visitors may see the old styles for up to 10 minutes because of browser caching.
+
+## Weekend list (Sa./So. Tagesempfehlung)
+On Saturdays and Sundays the menu card gets an extra tab, "Tagesempfehlung", which opens first
+(the Mittagsmenü is Monday–Friday only). On weekdays the tab is not shown.
+
+1. Open the repo on github.com → `menu/tagesempfehlung/` folder.
+2. Add file → Create new file. Name it with **Saturday's date**: `YYYY-MM-DD.txt` (e.g. `2026-11-14.txt`).
+3. One dish per line (it's usually just 2–3 dishes, so no categories needed). Commit.
+   Once the file exists it also shows during the week, as a "Sa./So." button between Friday and Monday in the day buttons.
+
+That one file is shown on Saturday and Sunday. If Sunday needs a different list,
+add a second file with Sunday's date – it replaces the Saturday file on Sunday.
+
+To check how a weekend will look before it happens, open the site with `?vorschau=` and a date,
+e.g. `https://www.zur-jana.at/?vorschau=2026-11-14`.
+
+## Events (posters)
+Event posters are shown at the top of the page, in the welcome band (before the menus),
+and the header gets an "Events" link while at least one event is upcoming.
+
+1. Open the repo on github.com → `events/` folder → Add file → Upload files.
+2. Name the poster with the **event date**: `YYYY-MM-DD.jpg`, e.g. `2026-11-13.jpg`.
+   Anything may follow the date: `2026-12-05-nikolaus.jpg` (for two events on one day).
+3. Commit. The poster appears within a minute or two.
+
+The poster is shown whole, exactly as uploaded (only scaled down; tap to enlarge).
+It disappears by itself at 06:00 the morning after its date (Klagenfurt time).
+Several upcoming events are shown side by side, the soonest first.
+Old posters can stay in the folder or be deleted – either way they are no longer shown.
 
 ## Gallery
 1. Open the repo on github.com → `gallery/` folder.

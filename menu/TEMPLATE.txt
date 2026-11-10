@@ -1,4 +1,4 @@
-# Ein Gericht pro Zeile:  Kategorie | Gericht
+# Ein Gericht pro Zeile:  Kategorie | Gericht   (oder nur: Gericht – die Kategorie ist optional)
 # Zeilen mit # am Anfang werden ignoriert. Speichern als menu/JJJJ-MM-TT.txt (z. B. 2026-11-10.txt)
 # "(vegetarisch)" oder "(vegan)" am Ende eines Gerichts zeigt ein kleines Etikett.
 Suppen | Rindsuppe mit Grießnockerl

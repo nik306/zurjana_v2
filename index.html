@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Young+Serif&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=19">
+  <link rel="stylesheet" href="style.css?v=25">
 </head>
 <body>
   <header class="site-header">
@@ -33,6 +33,10 @@
       <a href="#galerie" id="nav-gallery" hidden>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16l4.6-4.6a2 2 0 012.8 0L16 16m-2-2l1.6-1.6a2 2 0 012.8 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
         <span>Galerie</span>
+      </a>
+      <a href="#events" id="nav-events" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg>
+        <span>Events</span>
       </a>
       <a href="#contact">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
@@ -64,20 +68,34 @@
         </dl>
         <p class="badge-closed"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Kein Ruhetag!</p>
       </div>
+      <div class="hero-events" id="events" hidden>
+        <p class="eyebrow">Veranstaltungen</p>
+        <div class="event-list" id="event-list"></div>
+      </div>
     </div>
   </section>
 
   <main>
     <section id="menus" class="daily">
       <div class="tabs" role="tablist" aria-label="Menüs">
+        <button type="button" role="tab" id="tab-tagesempfehlung" data-tab="tagesempfehlung" aria-controls="panel-tagesempfehlung" aria-selected="false" tabindex="-1">Tagesempfehlung</button>
         <button type="button" role="tab" id="tab-mittagsmenu" data-tab="mittagsmenu" aria-controls="panel-mittagsmenu" aria-selected="true">Mittagsmenü</button>
         <button type="button" role="tab" id="tab-speisekarte" data-tab="speisekarte" aria-controls="panel-speisekarte" aria-selected="false" tabindex="-1">Speisekarte</button>
+      </div>
+
+      <div class="panel" id="panel-tagesempfehlung" role="tabpanel" aria-labelledby="tab-tagesempfehlung" hidden>
+        <p class="eyebrow light">Samstag &amp; Sonntag</p>
+        <h2 class="panel-title">Sa./So. Tagesempfehlung</h2>
+        <p class="panel-sub" id="weekend-date"></p>
+        <div class="ornament" aria-hidden="true"><span></span>✦<span></span></div>
+        <div id="weekend-menu" class="menu-list" aria-live="polite">Tagesempfehlung wird geladen…</div>
       </div>
 
       <div class="panel" id="panel-mittagsmenu" role="tabpanel" aria-labelledby="tab-mittagsmenu">
         <p class="eyebrow light">Montag bis Freitag</p>
         <h1 class="panel-title" id="menu-title">Das heutige Mittagsmenü</h1>
         <p class="panel-sub" id="date"></p>
+        <div class="day-picker" id="day-picker" role="group" aria-label="Tag auswählen" hidden></div>
         <div class="ornament" aria-hidden="true"><span></span>✦<span></span></div>
         <div id="menu" class="menu-list" aria-live="polite">Menü wird geladen…</div>
       </div>
@@ -154,6 +172,6 @@
     <p class="copyright">© <span id="year"></span> zur Jana. Alle Rechte vorbehalten.</p>
   </footer>
 
-  <script src="script.js?v=17"></script>
+  <script src="script.js?v=22"></script>
 </body>
 </html>

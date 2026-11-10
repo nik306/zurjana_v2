@@ -1,0 +1,9 @@
+---
+layout: null
+---
+{%- comment -%}
+  GitHub Pages (Jekyll) turns this into a list of every file in the events/ folder
+  each time something is pushed. script.js reads it to show the event posters.
+{%- endcomment -%}
+{%- assign posters = site.static_files | where_exp: "file", "file.path contains '/events/'" | map: "path" | sort -%}
+{{ posters | jsonify }}
