@@ -1,6 +1,37 @@
-# Ein Gericht pro Zeile:  Kategorie | Gericht   (oder nur: Gericht – die Kategorie ist optional)
-# Zeilen mit # am Anfang werden ignoriert. Speichern als menu/JJJJ-MM-TT.txt (z. B. 2026-11-10.txt)
-# "(vegetarisch)" oder "(vegan)" am Ende eines Gerichts zeigt ein kleines Etikett.
-Suppen | Rindsuppe mit Grießnockerl
-Hauptspeisen | Wiener Schnitzel mit Erdäpfelsalat
-Nachspeisen | Apfelstrudel
+# Mittagsmenü – EINE Datei pro Woche, benannt nach dem MONTAG der Woche:
+#   menu/JJJJ-MM-TT.txt   z. B. menu/2026-11-16.txt für die Woche 16.11. – 20.11.
+#
+# Oben (optional):
+#   Preis: 14,40 | mit Suppe oder Salat   → wird einmal über den Gerichten angezeigt ("€ 14,40 · mit Suppe oder Salat")
+#   Zeit: 11:00 – 14:00 Uhr
+#   * Text                                → Hinweis unter dem Menü (z. B. "Auch à la carte oder zum Mitnehmen")
+#
+# Dann pro Tag eine Zeile mit dem Wochentag (auch "MONTAG 16.11." geht) und darunter die Gerichte.
+# Ein "*" vor dem Gericht ist erlaubt (kann aus der Word-Vorlage einfach kopiert werden).
+# Hat ein Gericht ausnahmsweise einen eigenen Preis:  Gericht | 16,90
+# Zeilen mit # am Anfang werden ignoriert.
+
+Preis: 14,40 | mit Suppe oder Salat
+Zeit: 11:00 – 14:00 Uhr
+* Auch à la carte oder zum Mitnehmen
+* Warme Küche auch von 17:00 bis 20:00 Uhr
+
+MONTAG
+*Gericht 1
+*Gericht 2
+
+DIENSTAG
+*Gericht 1
+*Gericht 2
+
+MITTWOCH
+*Gericht 1
+*Gericht 2
+
+DONNERSTAG
+*Gericht 1
+*Gericht 2
+
+FREITAG
+*Gericht 1
+*Gericht 2

@@ -8,26 +8,38 @@
    - address: the text "Street 1, City" and the `query=` part of the map link
    - Facebook: both occurrences of `facebook.com/your-page`
 
-## Daily routine for the owner
-1. Open the repo on github.com → `menu/` folder.
-2. Add file → Create new file. Name it `YYYY-MM-DD.txt` (today's or a future date).
-3. Paste the dishes (see `TEMPLATE.txt`), then Commit changes.
-4. The site updates within about a minute.
+## Mittagsmenü – weekly routine for the owner
+One file per week, named after that week's **Monday**: `menu/2026-11-16.txt` for 16.11. – 20.11.
 
-Menus can be written days ahead: every upcoming weekday that already has a file appears as a day button (Heute · Morgen · Do 12.11. …) in the Mittagsmenü, and so does the coming weekend's Tagesempfehlung. The categories (`Suppen | …`) are optional – a line with just the dish works too. If there is no file for today, visitors see "Das heutige Mittagsmenü ist noch nicht online".
+1. Open the repo on github.com → `menu/` folder → Add file → Create new file.
+2. Name it `YYYY-MM-DD.txt` with Monday's date.
+3. Fill it in like `menu/TEMPLATE.txt` – the dishes can be pasted straight from the Word menu
+   (day lines like `MONTAG 16.11.` and the `*` before each dish are fine). Commit.
+
+At the top of the file (all optional):
+- `Preis: 14,40 | mit Suppe oder Salat` – shown once above the dishes; change it any week.
+- `Zeit: 11:00 – 14:00 Uhr`
+- `* Auch à la carte oder zum Mitnehmen` – lines starting with `*` above the first day are notes under the menu.
+
+The website shows the whole week like the printed menu: price line, then Monday–Friday with
+their dishes. Today is highlighted ("HEUTE"), days already past are faded. If next week's file
+already exists, it is shown below ("Nächste Woche"), so it can be written in advance.
+On weekends only next week is shown. If this week's file is missing, visitors see
+"Das Mittagsmenü für diese Woche ist noch nicht online".
 
 ## After changing style.css or script.js
 Bump the `?v=` number on the `style.css` and `script.js` links in `index.html` (e.g. `v=3` → `v=4`),
 otherwise visitors may see the old styles for up to 10 minutes because of browser caching.
 
 ## Weekend list (Sa./So. Tagesempfehlung)
-On Saturdays and Sundays the menu card gets an extra tab, "Tagesempfehlung", which opens first
-(the Mittagsmenü is Monday–Friday only). On weekdays the tab is not shown.
+The weekend list has its own tab, "Tagesempfehlung" (Mittagsmenü · Tagesempfehlung · Speisekarte).
+On Saturdays and Sundays it is always there and opens first (the Mittagsmenü is Monday–Friday only).
 
 1. Open the repo on github.com → `menu/tagesempfehlung/` folder.
 2. Add file → Create new file. Name it with **Saturday's date**: `YYYY-MM-DD.txt` (e.g. `2026-11-14.txt`).
 3. One dish per line (it's usually just 2–3 dishes, so no categories needed). Commit.
-   Once the file exists it also shows during the week, as a "Sa./So." button between Friday and Monday in the day buttons.
+   Once the file exists, the "Tagesempfehlung" tab also shows during the week (next to Mittagsmenü),
+   so guests can see the weekend list in advance. Without a file there is no tab on weekdays.
 
 That one file is shown on Saturday and Sunday. If Sunday needs a different list,
 add a second file with Sunday's date – it replaces the Saturday file on Sunday.

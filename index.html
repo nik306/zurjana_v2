@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Young+Serif&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=26">
+  <link rel="stylesheet" href="style.css?v=35">
 </head>
 <body>
   <header class="site-header">
@@ -22,13 +22,9 @@
       <span>zur Jana</span>
     </a>
     <nav id="site-nav" aria-label="Hauptnavigation">
-      <a href="#mittagsmenu" data-tab="mittagsmenu">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-        <span>Mittagsmenü</span>
-      </a>
-      <a href="#speisekarte" data-tab="speisekarte">
+      <a href="#menus">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.25C10.5 5 8.5 4.5 6 4.5c-1 0-2 .1-3 .4v13.5c1-.3 2-.4 3-.4 2.5 0 4.5.5 6 1.75m0-13.5C13.5 5 15.5 4.5 18 4.5c1 0 2 .1 3 .4v13.5c-1-.3-2-.4-3-.4-2.5 0-4.5.5-6 1.75m0-13.5v13.5"/></svg>
-        <span>Speisekarte</span>
+        <span>Menüs</span>
       </a>
       <a href="#galerie" id="nav-gallery" hidden>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16l4.6-4.6a2 2 0 012.8 0L16 16m-2-2l1.6-1.6a2 2 0 012.8 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
@@ -74,6 +70,7 @@
       <div class="hero-events" id="events" hidden>
         <p class="eyebrow">Veranstaltungen</p>
         <div class="event-list" id="event-list"></div>
+        <div class="event-controls" id="event-controls" hidden></div>
       </div>
     </div>
   </section>
@@ -81,8 +78,8 @@
   <main>
     <section id="menus" class="daily">
       <div class="tabs" role="tablist" aria-label="Menüs">
-        <button type="button" role="tab" id="tab-tagesempfehlung" data-tab="tagesempfehlung" aria-controls="panel-tagesempfehlung" aria-selected="false" tabindex="-1">Tagesempfehlung</button>
         <button type="button" role="tab" id="tab-mittagsmenu" data-tab="mittagsmenu" aria-controls="panel-mittagsmenu" aria-selected="true">Mittagsmenü</button>
+        <button type="button" role="tab" id="tab-tagesempfehlung" data-tab="tagesempfehlung" aria-controls="panel-tagesempfehlung" aria-selected="false" tabindex="-1" hidden>Tagesempfehlung</button>
         <button type="button" role="tab" id="tab-speisekarte" data-tab="speisekarte" aria-controls="panel-speisekarte" aria-selected="false" tabindex="-1">Speisekarte</button>
       </div>
 
@@ -90,16 +87,15 @@
         <p class="eyebrow light">Samstag &amp; Sonntag</p>
         <h2 class="panel-title">Sa./So. Tagesempfehlung</h2>
         <p class="panel-sub" id="weekend-date"></p>
-        <div class="ornament" aria-hidden="true"><span></span>✦<span></span></div>
+        <div class="ornament" aria-hidden="true"><span></span><i></i><span></span></div>
         <div id="weekend-menu" class="menu-list" aria-live="polite">Tagesempfehlung wird geladen…</div>
       </div>
 
       <div class="panel" id="panel-mittagsmenu" role="tabpanel" aria-labelledby="tab-mittagsmenu">
         <p class="eyebrow light">Montag bis Freitag</p>
-        <h1 class="panel-title" id="menu-title">Das heutige Mittagsmenü</h1>
+        <h1 class="panel-title" id="menu-title">Unser Mittagsmenü</h1>
         <p class="panel-sub" id="date"></p>
-        <div class="day-picker" id="day-picker" role="group" aria-label="Tag auswählen" hidden></div>
-        <div class="ornament" aria-hidden="true"><span></span>✦<span></span></div>
+        <div class="ornament" aria-hidden="true"><span></span><i></i><span></span></div>
         <div id="menu" class="menu-list" aria-live="polite">Menü wird geladen…</div>
       </div>
 
@@ -107,7 +103,7 @@
         <p class="eyebrow light">À la carte</p>
         <h2 class="panel-title">Speisekarte</h2>
         <p class="panel-sub">Unsere Gerichte – jeden Tag für Sie</p>
-        <div class="ornament" aria-hidden="true"><span></span>✦<span></span></div>
+        <div class="ornament" aria-hidden="true"><span></span><i></i><span></span></div>
         <div id="regular-menu" class="menu-list" aria-live="polite">Speisekarte wird geladen…</div>
       </div>
     </section>
@@ -121,7 +117,7 @@
   </main>
 
   <dialog class="lightbox" id="lightbox" aria-label="Foto">
-    <button type="button" class="lb-btn lb-close" aria-label="Schließen">✕</button>
+    <button type="button" class="lb-btn lb-close" aria-label="Schließen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <button type="button" class="lb-btn lb-prev" aria-label="Vorheriges Foto">‹</button>
     <figure>
       <img alt="">
@@ -175,6 +171,6 @@
     <p class="copyright">© <span id="year"></span> zur Jana. Alle Rechte vorbehalten.</p>
   </footer>
 
-  <script src="script.js?v=23"></script>
+  <script src="script.js?v=33"></script>
 </body>
 </html>

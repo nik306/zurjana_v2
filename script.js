@@ -55,12 +55,7 @@ const longDate = (d, withYear = false) => d.toLocaleDateString("de-AT", {
 });
 const weekendDates = saturday => `${longDate(saturday)} und ${longDate(addDays(saturday, 1))}`;
 
-if (isWeekend) {
-  showWeekendList();
-} else {
-  document.getElementById("tab-tagesempfehlung").remove();
-  document.getElementById("panel-tagesempfehlung").remove();
-}
+showWeekendList();
 setupLunchMenus();
 
 function fetchText(url) {
@@ -69,91 +64,156 @@ function fetchText(url) {
     .catch(() => null);
 }
 
-// Mittagsmenü: today plus every upcoming weekday that already has a file, as day buttons.
-// On weekdays the coming weekend's Tagesempfehlung is included (in date order), if it is already online.
-// On weekends there is no "today" – the row shows next week's menus, if any exist yet.
-async function setupLunchMenus() {
-  const days = [];
-  for (let i = 0; i < LOOK_AHEAD_DAYS; i++) {
-    const d = addDays(now, i);
-    if (d.getDay() !== 0 && d.getDay() !== 6) days.push(d);
-  }
-  const texts = await Promise.all(days.map(d => fetchText(`menu/${iso(d)}.txt`)));
+// Mittagsmenü – one file per WEEK, named after that week's Monday: menu/2026-11-09.txt
+//
+//   Preis: 14,40 | mit Suppe oder Salat      ← shown once above the dishes (optional)
+//   Zeit: 11:00 – 14:00 Uhr                 ← optional
+//   * auch à la carte oder zum Mitnehmen     ← notes under the menu (optional)
+//
+//   Montag                                   ← a day line (may also read "MONTAG 9.11.")
+//   Gebratener Leberkäse mit Püree           ← dishes; a leading "*" is ignored
+//   Gebackene Champignons mit Sauce Tatar
+//
+//   Dienstag
+//   …
+// The page shows today plus every upcoming weekday that has dishes, as day buttons.
+// On weekends there is no "today" – the row shows next week's menu, if it exists yet.
+const DAY_NAMES = ["sonntag", "montag", "dienstag", "mittwoch", "donnerstag", "freitag", "samstag"];
 
-  const options = [];
-  days.forEach((date, i) => {
-    const isToday = iso(date) === today;
-    if (texts[i] !== null || isToday) options.push({ kind: "day", date, text: texts[i], isToday });
-  });
-
-  if (!isWeekend) {
-    const saturday = addDays(now, 6 - now.getDay());
-    const text = await fetchText(`menu/tagesempfehlung/${iso(saturday)}.txt`);
-    if (text !== null) options.push({ kind: "weekend", date: saturday, text });
-  }
-  options.sort((a, b) => a.date - b.date);   // weekend sits between Friday and Monday
-
-  if (options.length === 0) return showLunchWeekendNote();
-
-  const picker = document.getElementById("day-picker");
-  if (options.length > 1) {
-    const tomorrow = iso(addDays(now, 1));
-    for (const option of options) {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = option.kind === "weekend" ? "day day--weekend" : "day";
-      const top = document.createElement("span");
-      const bottom = document.createElement("small");
-      if (option.kind === "weekend") {
-        top.textContent = "Sa./So.";
-        bottom.textContent = "Tagesempfehlung";
-      } else {
-        const d = option.date;
-        top.textContent = option.isToday ? "Heute"
-          : iso(d) === tomorrow ? "Morgen"
-          : d.toLocaleDateString("de-AT", { weekday: "short" });
-        bottom.textContent = `${d.getDate()}.${d.getMonth() + 1}.`;
-      }
-      button.append(top, bottom);
-      button.addEventListener("click", () => showLunchOption(option, picker));
-      option.button = button;
-      const divider = () => {
-        const line = document.createElement("span");
-        line.className = "day-divider";
-        line.setAttribute("aria-hidden", "true");
-        return line;
-      };
-      if (option.kind === "weekend" && picker.childElementCount) picker.append(divider());
-      picker.append(button);
-      if (option.kind === "weekend" && option !== options.at(-1)) picker.append(divider());
+function parseWeek(text) {
+  const week = { price: "", priceNote: "", time: "", notes: [], days: {} };
+  let day = null;
+  for (const raw of text.split("\n")) {
+    const line = raw.trim();
+    if (!line || line.startsWith("#")) continue;
+    const dayMatch = line.toLowerCase().match(/^(montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag)\b[\s,.\d]*:?$/);
+    if (dayMatch) { day = DAY_NAMES.indexOf(dayMatch[1]); week.days[day] = []; continue; }
+    if (day === null) {                                   // header part, before the first day
+      const price = line.match(/^preis\s*:\s*(€?\s*\d+(?:[.,]\d{1,2})?\s*€?)\s*[|·–-]?\s*(.*)$/i);
+      const time = line.match(/^zeit\s*:\s*(.+)$/i);
+      if (price) { week.price = formatPrice(price[1].trim()); week.priceNote = price[2].trim(); }
+      else if (time) week.time = time[1].trim();
+      else if (line.startsWith("*")) week.notes.push(line.slice(1).trim());
+      continue;
     }
-    picker.hidden = false;
+    week.days[day].push(line.replace(/^\*\s*/, ""));    // dish (owner's "*" bullets are fine)
   }
-  showLunchOption(options[0], picker);
+  return week;
 }
 
-function showLunchOption(option, picker) {
-  for (const b of picker.querySelectorAll(".day")) b.setAttribute("aria-pressed", b === option.button);
-  const eyebrow = document.querySelector("#panel-mittagsmenu .eyebrow");
-  const title = document.getElementById("menu-title");
+// Shown like the printed weekly menu: price line, then Monday–Friday with their dishes.
+// Today is highlighted, days already past are faded. Next week's file, if it already
+// exists, is shown below. On weekends only next week is shown.
+async function setupLunchMenus() {
+  const thisMonday = addDays(now, 1 - (now.getDay() || 7));     // Sunday counts to the week before
+  const nextMonday = addDays(thisMonday, 7);
+  const [thisText, nextText] = await Promise.all(
+    [thisMonday, nextMonday].map(m => fetchText(`menu/${iso(m)}.txt`)));
 
-  if (option.kind === "weekend") {
-    eyebrow.textContent = "Samstag & Sonntag";
-    title.textContent = "Sa./So. Tagesempfehlung";
-    dateEl.textContent = weekendDates(option.date);
-  } else {
-    eyebrow.textContent = "Montag bis Freitag";
-    title.textContent = option.isToday ? "Das heutige Mittagsmenü"
-      : `Mittagsmenü am ${option.date.toLocaleDateString("de-AT", { weekday: "long" })}`;
-    dateEl.textContent = longDate(option.date, true);
+  const weeks = [];
+  if (!isWeekend) weeks.push({ monday: thisMonday, text: thisText });
+  if (nextText !== null) weeks.push({ monday: nextMonday, text: nextText });
+  if (weeks.length === 0) return showLunchWeekendNote();
+
+  document.querySelector("#panel-mittagsmenu .eyebrow").textContent = isWeekend ? "Nächste Woche" : "Montag bis Freitag";
+  document.getElementById("menu-title").textContent = isWeekend ? "Mittagsmenü" : "Unser Mittagsmenü";
+  dateEl.textContent = weekRange(weeks[0].monday);
+
+  menuEl.textContent = "";
+  menuEl.classList.add("is-week");
+  const counter = { n: 0 };
+  weeks.forEach((week, i) => renderWeek(week, i > 0 ? `Nächste Woche · ${weekRange(week.monday, false)}` : "", counter));
+}
+
+// "9. – 13. November 2026" (or "30. November – 4. Dezember 2026")
+function weekRange(monday, withYear = true) {
+  const friday = addDays(monday, 4);
+  const end = friday.toLocaleDateString("de-AT", { day: "numeric", month: "long", ...(withYear ? { year: "numeric" } : {}) });
+  const start = monday.getMonth() === friday.getMonth()
+    ? `${monday.getDate()}.`
+    : monday.toLocaleDateString("de-AT", { day: "numeric", month: "long" });
+  return `${start} – ${end}`;
+}
+
+function renderWeek({ monday, text }, heading, counter) {
+  const step = el => { el.style.setProperty("--i", counter.n++); return el; };
+  if (heading) {
+    const h = document.createElement("h2");
+    h.className = "week-title";
+    h.textContent = heading;
+    menuEl.append(step(h));
   }
 
-  try {
-    if (option.text === null) throw new Error("not online yet");
-    render(parse(option.text), menuEl);
-  } catch {
-    menuEl.innerHTML = '<p class="empty">Das heutige Mittagsmenü ist noch nicht online.<br>Bitte schauen Sie später wieder vorbei.</p>';
+  const week = text === null ? null : parseWeek(text);
+  const days = week ? [1, 2, 3, 4, 5].filter(d => week.days[d]?.length) : [];
+  if (days.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "empty";
+    empty.innerHTML = "Das Mittagsmenü für diese Woche ist noch nicht online.<br>Bitte schauen Sie später wieder vorbei.";
+    menuEl.append(empty);
+    return;
   }
+
+  // Week info – relevant every day, so it comes first and stands out:
+  // price, what's included, lunch time and the general notes (à la carte, evening kitchen …).
+  // For next week it is only repeated if something differs from this week.
+  const infoKey = JSON.stringify([week.price, week.priceNote, week.time, week.notes]);
+  if (infoKey !== counter.lastInfo && (week.price || week.priceNote || week.time || week.notes.length)) {
+    counter.lastInfo = infoKey;
+    const info = document.createElement("div");
+    info.className = "week-info";
+    // "€ 14,40  mit Suppe oder Salat · 11:00 – 14:00 Uhr" – one line, price in bold
+    const details = [week.priceNote, week.time].filter(Boolean);
+    if (week.price || details.length) {
+      const line = document.createElement("p");
+      line.className = "week-details";
+      if (week.price) {
+        const price = document.createElement("strong");
+        price.textContent = week.price;
+        line.append(price, details.length ? " " : "");
+      }
+      line.append(details.join(" · "));
+      info.append(line);
+    }
+    if (week.notes.length) {
+      const notes = document.createElement("ul");
+      notes.className = "week-notes";
+      for (const text of week.notes) {
+        const li = document.createElement("li");
+        li.textContent = text;
+        notes.append(li);
+      }
+      info.append(notes);
+    }
+    menuEl.append(step(info));
+  }
+
+  for (const d of days) {
+    const date = addDays(monday, d - 1);
+    const section = document.createElement("section");
+    section.className = "lunch-day";
+    if (iso(date) === today) section.classList.add("is-today");
+    else if (iso(date) < today) section.classList.add("is-past");
+
+    const title = document.createElement("h3");
+    const dayName = document.createElement("span");
+    dayName.textContent = DAY_NAMES[d];
+    const dayDate = document.createElement("small");
+    dayDate.textContent = `${date.getDate()}.${date.getMonth() + 1}.`;
+    title.append(dayName, " ", dayDate);
+    if (section.classList.contains("is-today")) {
+      const tag = document.createElement("em");
+      tag.className = "today-tag";
+      tag.textContent = "Heute";
+      title.append(" ", tag);
+    }
+
+    const list = document.createElement("ul");
+    for (const item of [...parse(week.days[d].join("\n")).values()].flat()) list.append(dishItem(item));
+    section.append(title, list);
+    menuEl.append(step(section));
+  }
+
 }
 
 // Weekend without any of next week's menus online yet
@@ -167,26 +227,41 @@ function showLunchWeekendNote() {
     und die <a href="#speisekarte" data-tab="speisekarte">Speisekarte</a>.</p>`;
 }
 
-// Weekend list: menu/tagesempfehlung/<Saturday's date>.txt is shown on Saturday AND Sunday.
-// A file with Sunday's own date, if there is one, replaces it on Sunday.
-function showWeekendList() {
-  const saturday = new Date(now);
-  if (now.getDay() === 0) saturday.setDate(now.getDate() - 1);
-  document.getElementById("weekend-date").textContent = weekendDates(saturday);
+// Weekend list ("Sa./So. Tagesempfehlung") – its own tab, like the Speisekarte.
+// menu/tagesempfehlung/<Saturday's date>.txt covers Saturday AND Sunday; a file with Sunday's
+// own date, if there is one, replaces it on Sunday.
+// Mon–Fri: the tab appears as soon as the coming weekend's file exists (visible in advance).
+// Sat/Sun: the tab is always there and opens first.
+async function showWeekendList() {
+  const tab = document.getElementById("tab-tagesempfehlung");
+  const listEl = document.getElementById("weekend-menu");
+  const saturday = addDays(now, now.getDay() === 0 ? -1 : 6 - now.getDay());
+  const files = now.getDay() === 0 ? [today, iso(saturday)] : [iso(saturday)];
 
-  const files = [`menu/tagesempfehlung/${today}.txt`];
-  if (now.getDay() === 0) files.push(`menu/tagesempfehlung/${saturday.toLocaleDateString("sv-SE")}.txt`);
-  loadMenu(files, document.getElementById("weekend-menu"),
-    "Die Tagesempfehlung für dieses Wochenende ist noch nicht online.<br>Bitte schauen Sie später wieder vorbei.");
-
-  // the header's "Mittagsmenü" link becomes "Tagesempfehlung" for the weekend
-  const navLink = document.querySelector('.site-header nav a[data-tab="mittagsmenu"]');
-  if (navLink) {
-    navLink.dataset.tab = "tagesempfehlung";
-    navLink.href = "#tagesempfehlung";
-    navLink.querySelector("span").textContent = "Tagesempfehlung";
+  let text = null;
+  for (const date of files) {
+    text = await fetchText(`menu/tagesempfehlung/${date}.txt`);
+    if (text !== null) break;
   }
+
+  if (text === null && !isWeekend) {
+    // nothing for the coming weekend yet: no tab (and leave it if a link pointed here)
+    if (tab.getAttribute("aria-selected") === "true") selectTab("mittagsmenu", { updateUrl: false });
+    return;
+  }
+
+  document.getElementById("weekend-date").textContent = weekendDates(saturday);
+  try {
+    if (text === null) throw new Error("not online yet");
+    render(parse(text), listEl);
+  } catch {
+    listEl.innerHTML = '<p class="empty">Die Tagesempfehlung für dieses Wochenende ist noch nicht online.<br>Bitte schauen Sie später wieder vorbei.</p>';
+  }
+  tab.hidden = false;
+  moveIndicator();
+
 }
+
 loadMenu("menu/speisekarte.txt", document.getElementById("regular-menu"),
   "Die Speisekarte konnte nicht geladen werden.<br>Bitte versuchen Sie es später erneut.");
 
@@ -214,7 +289,7 @@ const tabs = [...document.querySelectorAll('[role="tab"]')];
 const tabNames = tabs.map(t => t.dataset.tab);
 
 // Header highlight follows the part of the page you are looking at:
-// menu card -> the open tab's link, gallery -> Galerie, footer -> Kontakt, top -> none.
+// menu card -> Menüs, events -> Veranstaltungen, gallery -> Galerie, footer -> Kontakt, top -> none.
 const navLinks = [...document.querySelectorAll(".site-header nav a")];
 
 function updateNav() {
@@ -278,17 +353,19 @@ function selectTab(name, { focus = false, updateUrl = true } = {}) {
   if (updateUrl) history.replaceState(null, "", `#${name}`);
 }
 
-tabs.forEach((tab, i) => {
+tabs.forEach(tab => {
   tab.addEventListener("click", () => selectTab(tab.dataset.tab));
   tab.addEventListener("keydown", e => {
     const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
     if (!step) return;
     e.preventDefault();
-    selectTab(tabs[(i + step + tabs.length) % tabs.length].dataset.tab, { focus: true });
+    const visible = tabs.filter(t => !t.hidden);
+    const i = visible.indexOf(tab);
+    selectTab(visible[(i + step + visible.length) % visible.length].dataset.tab, { focus: true });
   });
 });
 
-// Header links (and the weekend link in the Mittagsmenü panel) jump to the menu card and open the right tab
+// Links with data-tab (e.g. in the Mittagsmenü weekend note) jump to the menu card and open that tab
 document.addEventListener("click", e => {
   const link = e.target.closest("a[data-tab]");
   if (!link) return;
@@ -307,27 +384,49 @@ if (tabNames.includes(startTab)) {
   selectTab("tagesempfehlung", { updateUrl: false });
 }
 
-// Each line: Category | Dish name   (anything after a second | is ignored)
+// Menu file format – one line each:
+//   Kategorie | Gericht | Preis     e.g.  Menüs | Schweinsbraten mit Knödel | 11,90
+//   Kategorie | Gericht             (no price)
+//   Gericht | Preis   or   Gericht  (no category – short lists)
+//   * Hinweis                       a small note shown under the menu
 // Blank lines and lines starting with # are ignored.
+// A numeric price is shown as "€ 11,90"; any other text (e.g. "inkl.") is shown as written.
 // Ending a dish name with "(vegetarisch)" or "(vegan)" shows a small badge.
+const PRICE = /^(€\s*)?\d+([.,]\d{1,2})?(\s*€)?$/;
+
 function parse(text) {
   const groups = new Map();
+  groups.notes = [];
   for (const line of text.split("\n")) {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith("#")) continue;
+    if (trimmed.startsWith("*")) { groups.notes.push(trimmed.slice(1).trim()); continue; }
     const parts = trimmed.split("|").map(s => s.trim());
-    // "Kategorie | Gericht", or just "Gericht" for short lists without categories
-    const [category, name] = parts.length > 1 ? parts : ["", parts[0]];
+    let category = "", name, price = "";
+    if (parts.length >= 3) [category, name, price] = parts;
+    else if (parts.length === 2 && PRICE.test(parts[1])) [name, price] = parts;
+    else if (parts.length === 2) [category, name] = parts;
+    else name = parts[0];
     if (!name) continue;
     if (!groups.has(category)) groups.set(category, []);
-    groups.get(category).push({ name });
+    groups.get(category).push({ name, price: formatPrice(price) });
   }
   return groups;
+}
+
+function formatPrice(price) {
+  if (!price) return "";
+  if (!PRICE.test(price)) return price;                          // "inkl." etc.
+  const amount = price.replace(/€/g, "").trim().replace(".", ",");
+  const cents = /,\d\d$/.test(amount) ? "" : /,\d$/.test(amount) ? "0" : ",00";
+  return `€ ${amount}${cents}`;
 }
 
 function render(groups, el) {
   if (groups.size === 0) throw new Error("Empty menu");
   el.textContent = "";
+  const withPrices = [...groups.values()].flat().some(item => item.price);
+  el.classList.toggle("has-prices", withPrices);   // dish left, price right
   let n = 0;                                   // running index for the cascade animation
   for (const [category, items] of groups) {
     const section = document.createElement("section");
@@ -338,26 +437,44 @@ function render(groups, el) {
     const list = document.createElement("ul");
 
     for (const item of items) {
-      const li = document.createElement("li");
-      const name = document.createElement("span");
-      name.className = "name";
-
-      const tag = item.name.match(/\s*\((vegetarisch|vegetarian|vegan)\)\s*$/i);
-      name.textContent = tag ? item.name.slice(0, tag.index) : item.name;
-      if (tag) {
-        const badge = document.createElement("span");
-        badge.className = "badge";
-        badge.textContent = tag[1].toLowerCase() === "vegan" ? "vegan" : "vegetarisch";
-        name.append(" ", badge);
-      }
-
-      li.append(name);
+      const li = dishItem(item);
       li.style.setProperty("--i", n++);
       list.append(li);
     }
     section.append(heading, list);
     el.append(section);
   }
+  for (const text of groups.notes ?? []) {
+    const note = document.createElement("p");
+    note.className = "menu-note";
+    note.textContent = text;
+    note.style.setProperty("--i", n++);
+    el.append(note);
+  }
+}
+
+// One dish as <li>: name (+ vegetarisch/vegan badge) and, if given, its price
+function dishItem(item) {
+  const li = document.createElement("li");
+  const name = document.createElement("span");
+  name.className = "name";
+  const tag = item.name.match(/\s*\((vegetarisch|vegetarian|vegan)\)\s*$/i);
+  name.textContent = tag ? item.name.slice(0, tag.index) : item.name;
+  if (tag) {
+    const badge = document.createElement("span");
+    badge.className = "badge";
+    badge.textContent = tag[1].toLowerCase() === "vegan" ? "vegan" : "vegetarisch";
+    name.append(" ", badge);
+  }
+  li.append(name);
+  if (item.price) {
+    const price = document.createElement("span");
+    price.className = "price";
+    price.textContent = item.price;
+    li.append(price);
+    li.classList.add("has-price");
+  }
+  return li;
 }
 
 // ---------- Gallery ----------
@@ -500,23 +617,35 @@ loadPhotoList("events")
       }) }));
     if (events.length === 0) return;
 
+    // One poster slot. Every poster sits whole in an identical 2:3 frame; the leftover space
+    // is filled with a blurred copy of the same poster, so different formats don't show.
     const listEl = document.getElementById("event-list");
     events.forEach((event, index) => {
       const button = document.createElement("button");
       button.type = "button";
       button.className = "event";
       button.setAttribute("aria-label", `Veranstaltung am ${event.caption} – Plakat vergrößern`);
+      const frame = document.createElement("span");
+      frame.className = "event-frame";
+      const backdrop = document.createElement("img");
+      backdrop.className = "event-backdrop";
+      backdrop.src = event.src;
+      backdrop.alt = "";
+      backdrop.setAttribute("aria-hidden", "true");
       const img = document.createElement("img");
+      img.className = "event-poster";
       img.src = event.src;
       img.alt = `Plakat: Veranstaltung am ${event.caption}`;
       img.decoding = "async";
+      frame.append(backdrop, img);
       const date = document.createElement("span");
       date.className = "event-date";
       date.textContent = event.caption;
-      button.append(img, date);
+      button.append(frame, date);
       button.addEventListener("click", () => openLightbox(index, events));
       listEl.append(button);
     });
+    if (events.length > 1) setupEventSlider(listEl, events.length);
     eventsBox.hidden = false;
     eventsBox.closest(".hero-inner").classList.add("has-events");
     document.getElementById("nav-events").hidden = false;
@@ -524,6 +653,63 @@ loadPhotoList("events")
     updateNav();
   })
   .catch(() => { /* no events folder: nothing shown */ });
+
+// Several posters: one at a time – ‹ dots › to switch, swipe on phones (native scrolling),
+// and a gentle automatic switch every 7 s that pauses while the visitor is using it.
+function setupEventSlider(listEl, count) {
+  const controls = document.getElementById("event-controls");
+  const dots = [];
+  let index = 0;
+  let paused = false;
+
+  const go = i => {
+    index = (i + count) % count;
+    listEl.scrollTo({ left: index * listEl.clientWidth, behavior: reduceMotion ? "auto" : "smooth" });
+    mark();
+  };
+  const mark = () => dots.forEach((dot, i) => dot.setAttribute("aria-current", i === index ? "true" : "false"));
+
+  const arrow = (label, text, step) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "event-arrow";
+    b.setAttribute("aria-label", label);
+    b.textContent = text;
+    b.addEventListener("click", () => go(index + step));
+    return b;
+  };
+  const dotBox = document.createElement("span");
+  dotBox.className = "event-dots";
+  for (let i = 0; i < count; i++) {
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.className = "event-dot";
+    dot.setAttribute("aria-label", `Veranstaltung ${i + 1} von ${count}`);
+    dot.addEventListener("click", () => go(i));
+    dots.push(dot);
+    dotBox.append(dot);
+  }
+  controls.append(arrow("Vorherige Veranstaltung", "‹", -1), dotBox, arrow("Nächste Veranstaltung", "›", 1));
+  controls.hidden = false;
+  mark();
+
+  // follow swipes
+  let scrollTimer = 0;
+  listEl.addEventListener("scroll", () => {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => { index = Math.round(listEl.scrollLeft / listEl.clientWidth); mark(); }, 80);
+  }, { passive: true });
+
+  // auto-advance, paused while pointing at / touching / focusing the posters
+  const box = listEl.closest(".hero-events");
+  box.addEventListener("pointerenter", () => { paused = true; });
+  box.addEventListener("pointerleave", () => { paused = false; });
+  box.addEventListener("focusin", () => { paused = true; });
+  box.addEventListener("focusout", () => { paused = false; });
+  box.addEventListener("touchstart", () => { paused = true; }, { passive: true });
+  if (!reduceMotion) setInterval(() => { if (!paused && !document.hidden) go(index + 1); }, 7000);
+  window.addEventListener("resize", () => listEl.scrollTo({ left: index * listEl.clientWidth }));
+}
 
 // ---------- Lightbox ----------
 const lightbox = document.getElementById("lightbox");
@@ -587,8 +773,17 @@ const navToggle = siteHeader.querySelector(".nav-toggle");
 function fitNav() {
   const wasOpen = siteHeader.classList.contains("nav-open");
   siteHeader.classList.remove("nav-collapsed", "nav-open");      // measure the one-line layout
-  const tooTight = siteNav.scrollWidth > siteNav.clientWidth + 1
-    || headerInner.scrollWidth > headerInner.clientWidth + 1;
+  // fold as soon as the links would not fit with some room to spare
+  const SPARE = 24;   // px
+  const linksWidth = [...siteNav.children]
+    .filter(a => !a.hidden)
+    .reduce((sum, a) => sum + a.getBoundingClientRect().width, 0);
+  const brand = siteHeader.querySelector(".header-brand");
+  const brandWidth = brand.offsetParent ? brand.getBoundingClientRect().width : 0;   // 0 when hidden on phones
+  const style = getComputedStyle(headerInner);
+  const available = headerInner.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+  const tooTight = linksWidth + brandWidth + SPARE > available
+    || siteNav.scrollWidth > siteNav.clientWidth + 1;
   siteHeader.classList.toggle("nav-collapsed", tooTight);
   setNavOpen(tooTight && wasOpen);
 }
