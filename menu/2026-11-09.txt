@@ -1,10 +1,10 @@
-Soups | Clear beef soup with liver dumplings
-Soups | Pumpkin cream soup with pumpkin seed oil
-Mains | Wiener Schnitzel with parsley potatoes
-Mains | Tafelspitz with apple horseradish and rösti
-Mains | Beef goulash with bread dumpling
-Mains | Käsespätzle with crispy onions and green salad
-Mains | Roast pork with sauerkraut and potato dumplings
-Mains | Mushroom risotto with parmesan (vegetarian)
-Desserts | Apple strudel with vanilla sauce
-Desserts | Kaiserschmarrn with plum compote
+Suppen | Rindsuppe mit Leberknödel
+Suppen | Kürbiscremesuppe mit Kernöl
+Hauptspeisen | Wiener Schnitzel mit Petersilerdäpfeln
+Hauptspeisen | Tafelspitz mit Apfelkren und Rösti
+Hauptspeisen | Rindsgulasch mit Semmelknödel
+Hauptspeisen | Käsespätzle mit Röstzwiebeln und grünem Salat
+Hauptspeisen | Schweinsbraten mit Sauerkraut und Erdäpfelknödel
+Hauptspeisen | Pilzrisotto mit Parmesan (vegetarisch)
+Nachspeisen | Apfelstrudel mit Vanillesauce
+Nachspeisen | Kaiserschmarrn mit Zwetschkenröster

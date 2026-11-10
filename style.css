@@ -22,7 +22,8 @@ html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  * { transition: none !important; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+  .badge-closed svg path { stroke-dashoffset: 0 !important; }
 }
 
 body {
@@ -106,7 +107,6 @@ a:focus-visible {
   transition: color 0.2s, background-color 0.2s;
 }
 
-.site-header nav a:hover { color: var(--brand); background: rgb(188 221 166 / 0.3); }
 .site-header nav a.is-active { color: var(--brand); background: rgb(188 221 166 / 0.35); }
 
 .site-header nav svg {
@@ -223,14 +223,27 @@ section { scroll-margin-top: 5rem; }
 .hero-hours strong { color: var(--brand); font-weight: 600; white-space: nowrap; }
 
 .badge-closed {
-  display: inline-block;
-  margin: 1.1rem 0 0;
-  padding: 0.3rem 0.9rem;
-  border-radius: 999px;
-  background: var(--brand);
-  color: #fff;
-  font-size: 0.85rem;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  color: var(--brand);
+  font-family: var(--serif);
+  font-size: 1.1rem;
+}
+
+.badge-closed svg {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0.25rem;
+  border-radius: 50%;
+  background: var(--bright);
+  fill: none;
+  stroke: #fff;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* ---------- Menu card with tabs ---------- */
@@ -406,8 +419,11 @@ section { scroll-margin-top: 5rem; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.4s ease;
+  opacity: 0;                   /* fades in once downloaded */
+  transition: transform 0.4s ease, opacity 0.4s ease;
 }
+
+.thumb img.is-loaded { opacity: 1; }
 
 .thumb:hover img { transform: scale(1.04); }
 .thumb:focus-visible { outline: 3px solid var(--bright); outline-offset: 3px; }
@@ -519,7 +535,6 @@ footer h4 {
   text-transform: uppercase;
 }
 
-.muted { margin: 0; color: var(--leaf); font-size: 0.95rem; }
 
 .address { display: flex; align-items: flex-start; gap: 0.6rem; margin-top: 0.25rem; }
 .address a { color: #e6ebea; line-height: 1.5; text-decoration: none; }
@@ -554,37 +569,52 @@ footer h4 {
 
 .contact-link:hover .icon-box { background: rgb(99 187 0 / 0.35); }
 
-.hours { margin: 0; font-size: 0.92rem; }
+.hours { margin: 0; }
 
 .hours div {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
   gap: 1rem;
-  padding: 0.45rem 0.6rem;
-  margin: 0 -0.6rem;
-  border-radius: 0.5rem;
+  padding: 0.6rem 0;
 }
 
-.hours div + div { border-top: 1px solid rgb(255 255 255 / 0.08); }
+.hours div + div { border-top: 1px solid rgb(255 255 255 / 0.1); }
 .hours dt { color: var(--leaf); }
-.hours dd { margin: 0; color: #d9e1e0; text-align: right; font-variant-numeric: tabular-nums; }
-
-.hours .is-today { background: rgb(99 187 0 / 0.18); border-top-color: transparent; }
-.hours .is-today + div { border-top-color: transparent; }
-.hours .is-today dt { color: #fff; font-weight: 600; }
-.hours .is-today dt::after {
-  content: "today";
-  margin-left: 0.5rem;
-  padding: 0.05rem 0.45rem;
-  border-radius: 999px;
-  background: var(--bright);
-  color: var(--brand-deep);
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  vertical-align: 0.1em;
+.hours dd {
+  margin: 0;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
+
+.open-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: fit-content;
+  margin: 0.25rem 0 0;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.07);
+  color: #d9e1e0;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.open-status::before {
+  content: "";
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: #8a9893;
+}
+
+.open-status.is-open { background: rgb(99 187 0 / 0.18); color: #fff; }
+.open-status.is-open::before { background: var(--bright); box-shadow: 0 0 0 3px rgb(99 187 0 / 0.3); }
 
 .note {
   margin: 0.25rem 0 0;
@@ -643,3 +673,195 @@ footer h4 {
   .footer-grid .footer-col:first-child { grid-column: auto; }
   footer { padding-top: 4rem; }
 }
+
+
+/* =====================================================================
+   Animations
+   Only backgrounds, icons and whole blocks move – text is never left
+   scaled or shifted, so it stays sharp. All of it is switched off for
+   visitors whose device asks for reduced motion (see top of file).
+   ===================================================================== */
+:root {
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes pop {
+  0%   { opacity: 0; transform: scale(0.96); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes ripple {
+  to { transform: scale(1); opacity: 0; }
+}
+
+@keyframes draw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* --- Page load: welcome band builds up --- */
+.hero .logo { animation: pop 0.6s var(--ease-out) both; }
+.hero-text > * { animation: rise 0.5s var(--ease-out) both; }
+.hero-text > :nth-child(1) { animation-delay: 0.05s; }
+.hero-text > :nth-child(2) { animation-delay: 0.1s; }
+.hero-text > :nth-child(3) { animation-delay: 0.15s; }
+.hero-text > :nth-child(4) { animation-delay: 0.2s; }
+
+.badge-closed svg path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: draw 0.4s ease-out 0.5s forwards;   /* the tick draws itself */
+}
+
+/* --- Header --- */
+.site-header { transition: box-shadow 0.3s; }
+.site-header.is-scrolled { box-shadow: 0 6px 24px rgb(0 40 30 / 0.12); }
+
+.site-header nav a {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.site-header nav a.is-active { color: var(--brand); background: transparent; }
+
+/* pill grows in behind the link */
+.site-header nav a::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: rgb(188 221 166 / 0.38);
+  opacity: 0;
+  transform: scale(0.92);
+  transition: transform 0.25s var(--ease-out), opacity 0.2s;
+}
+
+.site-header nav a.is-active::before { opacity: 1; transform: none; }
+
+/* Hover only on devices with a real mouse – on phones a tapped link would otherwise stay lit */
+@media (hover: hover) {
+  .site-header nav a:hover { color: var(--brand); }
+  .site-header nav a:hover::before { opacity: 0.6; transform: none; }
+  .site-header nav a.is-active:hover::before { opacity: 1; }
+}
+
+
+/* --- Tabs: sliding white pill --- */
+.tabs { position: relative; }
+
+.tab-indicator {
+  position: absolute;
+  top: 0.3rem;
+  bottom: 0.3rem;
+  left: 0;
+  width: 0;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.25);
+  transition: transform 0.35s var(--ease-out), width 0.35s var(--ease-out);
+}
+
+.tabs [role="tab"] { position: relative; z-index: 1; overflow: hidden; }
+
+.tabs.has-indicator [role="tab"][aria-selected="true"] {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* --- Menu: title and dishes cascade in when a tab opens --- */
+.js .panel > .eyebrow,
+.js .panel > .panel-title,
+.js .panel > .panel-sub,
+.js .panel > .ornament { animation: rise 0.35s var(--ease-out) both; }
+.js .panel > .panel-title { animation-delay: 0.03s; }
+.js .panel > .panel-sub { animation-delay: 0.06s; }
+.js .panel > .ornament { animation-delay: 0.06s; }
+
+.js .menu-list h2,
+.js .menu-list li {
+  animation: rise 0.4s var(--ease-out) both;
+  animation-delay: calc(0.08s + min(var(--i, 0), 6) * 25ms);
+}
+
+/* --- Ripple on click/tap --- */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.12;
+  transform: scale(0);
+  pointer-events: none;
+  animation: ripple 0.5s ease-out forwards;
+}
+
+.more, .icon-box { position: relative; overflow: hidden; }
+.lb-btn { overflow: hidden; }
+
+/* --- "Mehr Fotos anzeigen": colour sweeps in from the left --- */
+.more { isolation: isolate; }
+.more:hover { background: transparent; }
+
+.more::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--brand);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--ease-out);
+}
+
+.more:hover::before { transform: scaleX(1); }
+
+/* --- Gallery photos: overlay with a zoom icon --- */
+.thumb { position: relative; }
+
+.thumb::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='22' fill='%23ffffff' fill-opacity='.92'/%3E%3Cpath d='M24 15v18M15 24h18' stroke='%23004f3f' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E") center / 2.75rem no-repeat,
+    linear-gradient(to top, rgb(0 58 46 / 0.55), rgb(0 58 46 / 0.1));
+  opacity: 0;
+  transition: opacity 0.25s;
+  background-size: 2.5rem, auto;
+}
+
+.thumb:hover::after,
+.thumb:focus-visible::after { opacity: 1; }
+
+.thumb img { transform: none; }
+.thumb img.is-loaded { transform: none; }
+.thumb:hover img.is-loaded { transform: scale(1.03); }
+
+/* --- Full-screen viewer --- */
+@keyframes lb-in   { from { opacity: 0; } }
+@keyframes lb-zoom { from { opacity: 0; transform: scale(0.98); } }
+@keyframes lb-next { from { opacity: 0; transform: translateX(16px); } }
+@keyframes lb-prev { from { opacity: 0; transform: translateX(-16px); } }
+
+.lightbox[open] { animation: lb-in 0.3s ease; }
+.lightbox[open]::backdrop { animation: lb-in 0.3s ease; }
+.lightbox[open] figure { animation: lb-zoom 0.3s var(--ease-out); }
+.lightbox img.slide-next { animation: lb-next 0.3s var(--ease-out); }
+.lightbox img.slide-prev { animation: lb-prev 0.3s var(--ease-out); }
+
+
+/* --- Footer --- */
+
+/* --- Sections fade up as they scroll into view --- */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+}
+
+.js [data-reveal].is-visible { opacity: 1; transform: none; }

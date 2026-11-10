@@ -1,18 +1,18 @@
-# Regular menu (Speisekarte) – shown in the "Speisekarte" tab.
-# Same format as the daily menus:  Category | Dish name
-# Edit this one file whenever the regular menu changes.
-Starters | Beef tartare with toasted bread
-Starters | Mixed leaf salad with pumpkin seed oil
-Starters | Baked Camembert with cranberries (vegetarian)
-Soups | Clear beef soup with frittaten pancake strips
-Soups | Garlic cream soup with croutons (vegetarian)
-Mains | Wiener Schnitzel (veal) with parsley potatoes
-Mains | Pork schnitzel with French fries
-Mains | Cordon bleu with rice and cranberries
-Mains | Zwiebelrostbraten with roast potatoes
-Mains | Grilled trout with butter potatoes
-Mains | Kärntner Kasnudeln with brown butter (vegetarian)
-Mains | Vegetable stir-fry with rice (vegan)
-Desserts | Apple strudel with vanilla sauce
-Desserts | Palatschinken with apricot jam
-Desserts | Sachertorte with whipped cream
+# Speisekarte – wird im Tab "Speisekarte" angezeigt.
+# Gleiches Format wie das Mittagsmenü:  Kategorie | Gericht
+# Diese Datei bearbeiten, wenn sich die Speisekarte ändert.
+Vorspeisen | Beef Tatar mit getoastetem Brot
+Vorspeisen | Bunter Blattsalat mit Kernöl
+Vorspeisen | Gebackener Camembert mit Preiselbeeren (vegetarisch)
+Suppen | Frittatensuppe
+Suppen | Knoblauchcremesuppe mit Croutons (vegetarisch)
+Hauptspeisen | Wiener Schnitzel vom Kalb mit Petersilerdäpfeln
+Hauptspeisen | Schweinsschnitzel mit Pommes frites
+Hauptspeisen | Cordon bleu mit Reis und Preiselbeeren
+Hauptspeisen | Zwiebelrostbraten mit Braterdäpfeln
+Hauptspeisen | Gebratene Forelle mit Butterdäpfeln
+Hauptspeisen | Kärntner Kasnudeln mit brauner Butter (vegetarisch)
+Hauptspeisen | Gemüsepfanne mit Reis (vegan)
+Nachspeisen | Apfelstrudel mit Vanillesauce
+Nachspeisen | Palatschinken mit Marillenmarmelade
+Nachspeisen | Sachertorte mit Schlagobers

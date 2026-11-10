@@ -1,6 +1,6 @@
-# One dish per line:  Category | Dish name
-# Lines starting with # are ignored. Save as menu/YYYY-MM-DD.txt
-# End a dish name with (vegetarian) or (vegan) to show a small badge.
-Soups | Clear beef soup with semolina dumplings
-Mains | Wiener Schnitzel with potato salad
-Desserts | Apple strudel
+# Ein Gericht pro Zeile:  Kategorie | Gericht
+# Zeilen mit # am Anfang werden ignoriert. Speichern als menu/JJJJ-MM-TT.txt (z. B. 2026-11-10.txt)
+# "(vegetarisch)" oder "(vegan)" am Ende eines Gerichts zeigt ein kleines Etikett.
+Suppen | Rindsuppe mit Grießnockerl
+Hauptspeisen | Wiener Schnitzel mit Erdäpfelsalat
+Nachspeisen | Apfelstrudel
