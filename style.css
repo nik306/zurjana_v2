@@ -389,6 +389,12 @@ section { scroll-margin-top: 5rem; }
   text-align: center;
 }
 
+.empty a {
+  color: inherit;
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+
 /* ---------- Gallery ---------- */
 .gallery {
   margin-top: 4rem;

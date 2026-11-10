@@ -40,8 +40,24 @@ function showOpenStatus() {
 }
 
 // ---------- Menus ----------
-loadMenu(`menu/${today}.txt`, menuEl,
-  "Das heutige Mittagsmenü ist noch nicht online.<br>Bitte schauen Sie später wieder vorbei.");
+// The Mittagsmenü is served Monday to Friday only. On Saturday and Sunday the
+// panel says so, points to the Speisekarte, and the Speisekarte tab opens first.
+const isWeekend = now.getDay() === 0 || now.getDay() === 6;
+
+if (isWeekend) {
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + (now.getDay() === 6 ? 2 : 1));
+  document.getElementById("menu-title").textContent = "Unser Mittagsmenü";
+  dateEl.textContent = "Wieder ab " + monday.toLocaleDateString("de-AT", {
+    weekday: "long", day: "numeric", month: "long"
+  });
+  menuEl.innerHTML = `<p class="empty">Das Mittagsmenü gibt es von Montag bis Freitag.<br>
+    Am Wochenende kochen wir gerne für Sie von unserer
+    <a href="#speisekarte" data-tab="speisekarte">Speisekarte</a>.</p>`;
+} else {
+  loadMenu(`menu/${today}.txt`, menuEl,
+    "Das heutige Mittagsmenü ist noch nicht online.<br>Bitte schauen Sie später wieder vorbei.");
+}
 loadMenu("menu/speisekarte.txt", document.getElementById("regular-menu"),
   "Die Speisekarte konnte nicht geladen werden.<br>Bitte versuchen Sie es später erneut.");
 
@@ -114,7 +130,7 @@ moveIndicator();
 document.fonts?.ready.then(moveIndicator);
 window.addEventListener("resize", moveIndicator);
 
-function selectTab(name, { focus = false } = {}) {
+function selectTab(name, { focus = false, updateUrl = true } = {}) {
   for (const tab of tabs) {
     const on = tab.dataset.tab === name;
     tab.setAttribute("aria-selected", on);
@@ -124,7 +140,7 @@ function selectTab(name, { focus = false } = {}) {
   }
   moveIndicator();
   updateNav();
-  history.replaceState(null, "", `#${name}`);
+  if (updateUrl) history.replaceState(null, "", `#${name}`);
 }
 
 tabs.forEach((tab, i) => {
@@ -137,20 +153,23 @@ tabs.forEach((tab, i) => {
   });
 });
 
-// Header links and the button jump to the menu card and open the right tab
-for (const link of document.querySelectorAll("a[data-tab]")) {
-  link.addEventListener("click", e => {
-    e.preventDefault();
-    selectTab(link.dataset.tab);
-    menusSection.scrollIntoView({ block: "start" });
-  });
-}
+// Header links (and the weekend link in the Mittagsmenü panel) jump to the menu card and open the right tab
+document.addEventListener("click", e => {
+  const link = e.target.closest("a[data-tab]");
+  if (!link) return;
+  e.preventDefault();
+  selectTab(link.dataset.tab);
+  menusSection.scrollIntoView({ block: "start" });
+});
 
-// Opening the page with #speisekarte (e.g. a shared link) shows that tab
+// Opening the page with #speisekarte (e.g. a shared link) shows that tab;
+// without one, weekends open on the Speisekarte since there is no Mittagsmenü
 const startTab = location.hash.slice(1);
 if (tabNames.includes(startTab)) {
   selectTab(startTab);
   requestAnimationFrame(() => menusSection.scrollIntoView({ block: "start" }));
+} else if (isWeekend) {
+  selectTab("speisekarte", { updateUrl: false });
 }
 
 // Each line: Category | Dish name   (anything after a second | is ignored)
