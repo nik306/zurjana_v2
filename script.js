@@ -417,6 +417,9 @@ function parse(text) {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith("#")) continue;
     if (trimmed.startsWith("*")) { groups.notes.push(trimmed.slice(1).trim()); continue; }
+    // "Preis: 19,90 | mit Suppe und Salat" – one price for the whole list (like the Mittagsmenü)
+    const menuPrice = trimmed.match(/^preis\s*:\s*(€?\s*\d+(?:[.,]\d{1,2})?\s*€?)\s*[|·–-]?\s*(.*)$/i);
+    if (menuPrice) { groups.price = formatPrice(menuPrice[1].trim()); groups.priceNote = menuPrice[2].trim(); continue; }
     // "( gefüllt mit Käse und Schinken )" right under a dish = its small description
     if (trimmed.startsWith("(") && last) {
       const detail = trimmed.replace(/^\(\s*/, "").replace(/\s*\)$/, "");
@@ -451,6 +454,26 @@ function render(groups, el) {
   const withPrices = [...groups.values()].flat().some(item => item.price);
   el.classList.toggle("has-prices", withPrices);   // dish left, price right
   let n = 0;                                   // running index for the cascade animation
+  if (groups.price || groups.priceNote) {      // shared price, shown like the Mittagsmenü's
+    const info = document.createElement("div");
+    info.className = "week-info";
+    const line = document.createElement("p");
+    line.className = "week-details";
+    if (groups.price) {
+      const price = document.createElement("strong");
+      price.textContent = groups.price;
+      line.append(price, groups.priceNote ? " " : "");
+    }
+    if (groups.priceNote) {
+      const note = document.createElement("span");
+      note.className = "nowrap";
+      note.textContent = groups.priceNote;
+      line.append(note);
+    }
+    info.append(line);
+    info.style.setProperty("--i", n++);
+    el.append(info);
+  }
   for (const [category, items] of groups) {
     const section = document.createElement("section");
     const heading = document.createElement("h2");

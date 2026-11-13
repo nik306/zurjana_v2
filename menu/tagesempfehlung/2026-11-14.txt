@@ -1,5 +1,6 @@
 # Sa./So. Tagesempfehlung – gilt für Samstag UND Sonntag. Dateiname = Datum des Samstags.
 # Ein Gericht pro Zeile (Kategorien sind hier nicht nötig).
-Wiener Backhendl mit Erdäpfel-Vogerlsalat
-Rindsroulade mit Serviettenknödel
-Schwammerlgulasch mit Semmelknödel (vegetarisch)
+# "Preis: 19,90 | mit Suppe und Salat" = ein Preis für das ganze Menü (wie beim Mittagsmenü).
+Preis: 19,90 | mit Suppe und Salat
+Schweinemedaillons im Speckmantel mit Pfefferrahmsauce und Kroketten
+Meeresfrüchte-Risotto
